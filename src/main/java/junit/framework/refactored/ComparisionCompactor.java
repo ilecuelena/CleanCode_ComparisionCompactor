@@ -2,7 +2,10 @@ package junit.framework.refactored;
 
 import junit.framework.Assert;
 /*
-    Step 1 : eliminate all the f’s
+    Step 1 : eliminate all the f’s prefixes for the member variables. [N6]
+
+    Step 2 : Extract the unencapsulated conditional at the beginning
+    of the compact function. [G28]
  */
 public class ComparisionCompactor {
 
@@ -25,13 +28,17 @@ public class ComparisionCompactor {
     }
 
     public String compact(String message) {
-        if(expected == null || actual == null || areStringsEqual())
+        if(shouldNotCompact())
             return Assert.format(message, expected, actual);
         findCommonPrefix();
         findCommonSuffix();
         String expected = compactString(this.expected);
         String actual = compactString(this.actual);
         return Assert.format(message, expected, actual);
+    }
+
+    public boolean shouldNotCompact() {
+        return expected == null || actual == null || areStringsEqual();
     }
 
     private String compactString(String source) {
