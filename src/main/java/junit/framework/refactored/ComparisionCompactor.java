@@ -11,7 +11,8 @@ import junit.framework.Assert;
     have the same names as the member variables? Don’t they represent
     something else [N4]? We should make the names unambiguous.
 
-
+    Step 4 : Negatives are slightly harder to understand than positives [G29].
+    So let’s turn that if statement on its head and invert the sense of the conditional.
  */
 public class ComparisionCompactor {
 
@@ -34,17 +35,19 @@ public class ComparisionCompactor {
     }
 
     public String compact(String message) {
-        if(shouldNotCompact())
+        if(canBeCompacted()){
+            findCommonPrefix();
+            findCommonSuffix();
+            String compactExpected = compactString(this.expected);
+            String compactActual = compactString(this.actual);
+            return Assert.format(message, compactExpected, compactActual);
+        }else{
             return Assert.format(message, expected, actual);
-        findCommonPrefix();
-        findCommonSuffix();
-        String compactExpected = compactString(this.expected);
-        String compactActual = compactString(this.actual);
-        return Assert.format(message, compactExpected, compactActual);
+        }
     }
 
-    public boolean shouldNotCompact() {
-        return expected == null || actual == null || areStringsEqual();
+    public boolean canBeCompacted() {
+        return expected != null && actual != null && !areStringsEqual();
     }
 
     private String compactString(String source) {
