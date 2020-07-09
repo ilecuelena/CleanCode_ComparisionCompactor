@@ -13,6 +13,13 @@ import junit.framework.Assert;
 
     Step 4 : Negatives are slightly harder to understand than positives [G29].
     So let’s turn that if statement on its head and invert the sense of the conditional.
+
+    Step 5 : The  name  of  the  function  is  strange  [N7].  Although  it
+    does  compact  the  strings,  it actually  might  not  compact  the  strings
+    if  canBeCompacted returns false.  So  naming  this function compact hides
+    the  side  effect  of  the  error  check.  Notice  also  that  the  function
+    returns a formatted message, not just the compacted strings.
+    So the name of the function should  really  be  formatCompactedComparison.
  */
 public class ComparisionCompactor {
 
@@ -34,7 +41,7 @@ public class ComparisionCompactor {
         this.actual = actual;
     }
 
-    public String compact(String message) {
+    public String formatCompactedComparison(String message) {
         if(canBeCompacted()){
             findCommonPrefix();
             findCommonSuffix();
