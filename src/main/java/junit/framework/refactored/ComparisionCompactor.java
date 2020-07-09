@@ -34,6 +34,12 @@ import junit.framework.Assert;
     So  we  should change findCommonPrefix and findCommonSuffix to return the
     prefixIndex and suffix values. We should also change the names of the member
     variables to be a little more accurate[N1]; after all, they are both indices. 
+
+    Step 8 : Careful inspection of findCommonSuffix exposes a hidden temporal
+    coupling [G31]; it depends on the fact that prefixIndex is calculated by
+    findCommonPrefix. If these two functions were called out of order, there
+    would be a difficult debugging session ahead. So, to expose  this  temporal
+    coupling,  let’s  have  findCommonSuffix take  the  prefixIndex as  an argument.
  */
 public class ComparisionCompactor {
 
@@ -73,7 +79,7 @@ public class ComparisionCompactor {
 
     private void compactExpectedAndActual() {
         prefixIndex = findCommonPrefix();
-        suffixIndex = findCommonSuffix();
+        suffixIndex = findCommonSuffix(prefixIndex);
         compactExpected = compactString(this.expected);
         compactActual = compactString(this.actual);
     }
@@ -88,7 +94,7 @@ public class ComparisionCompactor {
         return prefixIndex;
     }
 
-    private int findCommonSuffix() {
+    private int findCommonSuffix(int prefixIndex) {
         int expectedSuffixIndex = expected.length() - 1;
         int actualSuffixIndex = actual.length() - 1;
         for (;
