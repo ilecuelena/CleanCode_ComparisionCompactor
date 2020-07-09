@@ -20,6 +20,12 @@ import junit.framework.Assert;
     the  side  effect  of  the  error  check.  Notice  also  that  the  function
     returns a formatted message, not just the compacted strings.
     So the name of the function should  really  be  formatCompactedComparison.
+
+    Step 6 : The body of the if statement is where the true compacting of the
+    expected and actual strings is done. We should extract that as a method
+    named compactExpectedAndActual. However,  we  want  the
+    formatCompactedComparison function  to  do  all  the  formatting.
+    The compact... function should do nothing but compacting [G30].
  */
 public class ComparisionCompactor {
 
@@ -30,6 +36,8 @@ public class ComparisionCompactor {
     private int contextLength;
     private String expected;
     private String actual;
+    private String compactExpected;
+    private String compactActual;
     private int prefix;
     private int suffix;
 
@@ -42,11 +50,9 @@ public class ComparisionCompactor {
     }
 
     public String formatCompactedComparison(String message) {
+
         if(canBeCompacted()){
-            findCommonPrefix();
-            findCommonSuffix();
-            String compactExpected = compactString(this.expected);
-            String compactActual = compactString(this.actual);
+            compactExpectedAndActual();
             return Assert.format(message, compactExpected, compactActual);
         }else{
             return Assert.format(message, expected, actual);
@@ -56,6 +62,14 @@ public class ComparisionCompactor {
     public boolean canBeCompacted() {
         return expected != null && actual != null && !areStringsEqual();
     }
+
+    private void compactExpectedAndActual() {
+        findCommonPrefix();
+        findCommonSuffix();
+        compactExpected = compactString(this.expected);
+        compactActual = compactString(this.actual);
+    }
+
 
     private String compactString(String source) {
         String result = DELTA_START +
