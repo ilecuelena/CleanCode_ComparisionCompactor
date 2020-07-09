@@ -6,6 +6,12 @@ import junit.framework.Assert;
 
     Step 2 : Extract the unencapsulated conditional at the beginning
     of the compact function. [G28]
+
+    Step 3 : Why are there variables in this function(compact) that
+    have the same names as the member variables? Don’t they represent
+    something else [N4]? We should make the names unambiguous.
+
+
  */
 public class ComparisionCompactor {
 
@@ -17,7 +23,7 @@ public class ComparisionCompactor {
     private String expected;
     private String actual;
     private int prefix;
-    private int sufix;
+    private int suffix;
 
     public ComparisionCompactor(int contextLength,
                                 String expected,
@@ -32,9 +38,9 @@ public class ComparisionCompactor {
             return Assert.format(message, expected, actual);
         findCommonPrefix();
         findCommonSuffix();
-        String expected = compactString(this.expected);
-        String actual = compactString(this.actual);
-        return Assert.format(message, expected, actual);
+        String compactExpected = compactString(this.expected);
+        String compactActual = compactString(this.actual);
+        return Assert.format(message, compactExpected, compactActual);
     }
 
     public boolean shouldNotCompact() {
@@ -44,10 +50,10 @@ public class ComparisionCompactor {
     private String compactString(String source) {
         String result = DELTA_START +
                 source.substring(prefix, source.length() -
-                        sufix + 1) + DELTA_END;
+                        suffix + 1) + DELTA_END;
         if (prefix > 0)
             result = computeCommonPrefix() + result;
-        if (sufix > 0)
+        if (suffix > 0)
             result = result + computeCommonSuffix();
         return result;
     }
@@ -70,7 +76,7 @@ public class ComparisionCompactor {
             if (expected.charAt(expectedSuffix) != actual.charAt(actualSuffix))
                 break;
         }
-        sufix = expected.length() - expectedSuffix;
+        suffix = expected.length() - expectedSuffix;
     }
 
     private String computeCommonPrefix() {
@@ -80,10 +86,10 @@ public class ComparisionCompactor {
     }
 
     private String computeCommonSuffix() {
-        int end = Math.min(expected.length() - sufix + 1 + contextLength,
+        int end = Math.min(expected.length() - suffix + 1 + contextLength,
                 expected.length());
-        return expected.substring(expected.length() - sufix + 1, end) +
-                (expected.length() - sufix + 1 < expected.length() -
+        return expected.substring(expected.length() - suffix + 1, end) +
+                (expected.length() - suffix + 1 < expected.length() -
                         contextLength ? ELLIPSIS : "");
     }
 
