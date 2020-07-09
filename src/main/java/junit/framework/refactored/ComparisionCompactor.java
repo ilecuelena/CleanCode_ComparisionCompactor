@@ -40,6 +40,18 @@ import junit.framework.Assert;
     findCommonPrefix. If these two functions were called out of order, there
     would be a difficult debugging session ahead. So, to expose  this  temporal
     coupling,  let’s  have  findCommonSuffix take  the  prefixIndex as  an argument.
+
+    Step 9 : The passing of the prefixIndex argument is a bit arbitrary[G32].
+    It  works  to  establish  the  ordering  but  does  nothing  to  explain
+    the  need  for  that ordering. Another programmer might undo what we have
+    done because there’s no indication that the parameter is really needed.
+
+    We  put findCommonPrefix and findCommonSuffix back  the  way  they  were,
+    changing  the name  of  findCommonSuffix to findCommonPrefixAndSuffix
+    and  having  it  call  findCommonPrefix before  doing  anything  else.
+    That  establishes  the  temporal  nature  of  the  two  functions
+    in a much more dramatic way than the previous solution.
+    It also points out how ugly findCommonPrefixAndSuffix is.
  */
 public class ComparisionCompactor {
 
@@ -78,23 +90,13 @@ public class ComparisionCompactor {
     }
 
     private void compactExpectedAndActual() {
-        prefixIndex = findCommonPrefix();
-        suffixIndex = findCommonSuffix(prefixIndex);
+        findCommonPrefixAndSuffix();
         compactExpected = compactString(this.expected);
         compactActual = compactString(this.actual);
     }
 
-    private int findCommonPrefix() {
-        int prefixIndex = 0;
-        int end = Math.min(expected.length(), actual.length());
-        for (; prefixIndex < end; prefixIndex++) {
-            if (expected.charAt(prefixIndex) != actual.charAt(prefixIndex))
-                break;
-        }
-        return prefixIndex;
-    }
-
-    private int findCommonSuffix(int prefixIndex) {
+    private void findCommonPrefixAndSuffix() {
+        findCommonPrefix();
         int expectedSuffixIndex = expected.length() - 1;
         int actualSuffixIndex = actual.length() - 1;
         for (;
@@ -103,7 +105,16 @@ public class ComparisionCompactor {
             if (expected.charAt(expectedSuffixIndex) != actual.charAt(actualSuffixIndex))
                 break;
         }
-        return expected.length() - expectedSuffixIndex;
+        suffixIndex = expected.length() - expectedSuffixIndex;
+    }
+
+    private void findCommonPrefix() {
+        prefixIndex = 0;
+        int end = Math.min(expected.length(), actual.length());
+        for (; prefixIndex < end; prefixIndex++) {
+            if (expected.charAt(prefixIndex) != actual.charAt(prefixIndex))
+                break;
+        }
     }
 
     private String compactString(String source) {
